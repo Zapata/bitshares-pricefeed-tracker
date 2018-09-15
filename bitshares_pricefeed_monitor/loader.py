@@ -31,6 +31,7 @@ def compute_price(price_data):
     return (float(price_data['base']['amount']) / base_precision) / (float(price_data['quote']['amount']) / quote_precision)
 
 def load_pricefeeds(from_date, to_date, batch_size=1000):
+    count = 0
     s = Search(index="bitshares-*")
     s = s.extra(size=batch_size)
     s = s.query('bool', filter = [
@@ -41,6 +42,7 @@ def load_pricefeeds(from_date, to_date, batch_size=1000):
 
     batch = []
     for hit in s.scan():
+        count += 1
         op = json.loads(hit.operation_history.op)[1]
         batch.append({
             'timestamp': parser.parse(hit.block_data.block_time),
@@ -60,19 +62,25 @@ def load_pricefeeds(from_date, to_date, batch_size=1000):
             batch = []
 
     db.execute(prices.insert(), batch)
+    return count
 
 def load_recent_pricefeeds():
     start = max_timestamp()
     if not start:
         start =  (datetime.utcnow() - timedelta(hours=1))
-    print("Load feeds from {} to {}.".format(start.isoformat(), 'now'))
-    load_pricefeeds(start.isoformat(), 'now')
-    print("Loaded feeds from {} to {}.".format(start.isoformat(), 'now'))
+    while start < datetime.utcnow():
+        end = start + timedelta(hours=1)
+        end_string = end.isoformat() if end < datetime.utcnow() else 'now'
+        print("Load feeds from {} to {}.".format(start.isoformat(), end_string))
+        count = load_pricefeeds(start.isoformat(), end_string)
+        print("Loaded {} feeds from {} to {}.".format(count, start.isoformat(), end_string))
+        start = end + timedelta(seconds=1)
 
 def load_historic_pricefeeds():
     last = min_timestamp() - timedelta(seconds=1)
-    if last > config.OLDEST_PRICEFEED_DATETIME:
-        start = last - timedelta(days=1)
+    while last > config.OLDEST_PRICEFEED_DATETIME:
+        start = last - timedelta(hours=1)
         print("Load old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))
-        load_pricefeeds(start.isoformat(), last.isoformat())
-        print("Loaded old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))
+        count = load_pricefeeds(start.isoformat(), last.isoformat())
+        print("Loaded {} old feeds from {} to {}.".format(count, start.isoformat(), last.isoformat()))
+        last = start - timedelta(seconds=1)
