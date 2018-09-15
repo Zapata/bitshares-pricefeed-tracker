@@ -44,5 +44,5 @@ class BitsharesWebsocketClient():
     def get_object(self, object_id):
         return self.request('get_objects', [[object_id]])[0]
 
-
-client = BitsharesWebsocketClient('wss://api.dex.trading')
+import config
+client = BitsharesWebsocketClient(config.BITSHARES_WEBSOCKET_NODE)

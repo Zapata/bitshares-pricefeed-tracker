@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, DateTime, Float, Integer, String, Text, MetaData
 from sqlalchemy.sql import select, func
+import config
 
-#db = create_engine('postgres://postgres:secret@localhost:5432/postgres', echo=True)
-db = create_engine('sqlite:///:memory:', echo=True)
+db = create_engine(config.DATABASE, echo=config.DEBUG)
 
 metadata = MetaData()
 

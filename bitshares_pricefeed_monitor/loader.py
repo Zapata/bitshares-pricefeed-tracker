@@ -4,8 +4,9 @@ from elasticsearch_dsl import connections, Search, Q, A
 import json
 from .bitshares_websocket_client import client as bts
 from .database import db, prices, max_timestamp
+import config
 
-connections.create_connection(hosts=['https://elasticsearch.bitshares.ws/'], http_auth=('BitShares', 'Infrastructure'))
+connections.create_connection(**config.BITSHARES_ELASTIC_SEARCH_NODE)
 
 assets_by_id = {}
 account_names_by_id = {}
