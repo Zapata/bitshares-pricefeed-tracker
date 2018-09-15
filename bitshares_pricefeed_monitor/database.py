@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, DateTime, Float, Integer, String, Text, MetaData
-from sqlalchemy.sql import select, func
+from sqlalchemy.sql import select, func, text
 import config
 
 db = create_engine(config.DATABASE, echo=config.DEBUG)
@@ -22,6 +22,8 @@ prices = Table('prices', metadata,
 )
 
 metadata.create_all(db)
+db.execute(text("select create_hypertable('prices', 'timestamp', if_not_exists => true)"))
+
 
 def max_timestamp():
     return db.execute(select([func.max(prices.c.timestamp)])).scalar()
