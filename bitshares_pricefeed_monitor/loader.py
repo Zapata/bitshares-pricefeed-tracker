@@ -3,7 +3,7 @@ from dateutil import parser
 from elasticsearch_dsl import connections, Search, Q, A
 import json
 from .bitshares_websocket_client import client as bts
-from .database import db, prices, max_timestamp
+from .database import db, prices, max_timestamp, min_timestamp
 import config
 
 connections.create_connection(**config.BITSHARES_ELASTIC_SEARCH_NODE)
@@ -71,8 +71,8 @@ def load_recent_pricefeeds():
 
 def load_historic_pricefeeds():
     last = min_timestamp() - timedelta(seconds=1)
-    start = last - timedelta(days=1)
-    print("Load old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))
-    load_pricefeeds(start.isoformat(), last.isoformat())
-    print("Loaded old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))
-
+    if last > config.OLDEST_PRICEFEED_DATETIME:
+        start = last - timedelta(days=1)
+        print("Load old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))
+        load_pricefeeds(start.isoformat(), last.isoformat())
+        print("Loaded old feeds from {} to {}.".format(start.isoformat(), last.isoformat()))

@@ -4,3 +4,4 @@ certifi
 elasticsearch>=6.0.0,<7.0.0
 elasticsearch-dsl>=6.0.0,<7.0.0
 websocket-client
+schedule
