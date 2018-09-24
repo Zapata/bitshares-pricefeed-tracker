@@ -30,3 +30,14 @@ def max_timestamp():
 
 def min_timestamp():
     return db.execute(select([func.min(prices.c.timestamp)])).scalar()
+
+def list_assets():
+    query = select([prices.c.asset]).distinct().order_by(prices.c.asset)
+    rows = db.execute(query).fetchall()
+    return [ c for (c, ) in rows ]
+
+def list_publishers(asset):
+    query = select([prices.c.publisher]).where(prices.c.asset == asset).distinct().order_by(prices.c.publisher)
+    rows = db.execute(query).fetchall()
+    return [ c for (c, ) in rows ]
+

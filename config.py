@@ -10,4 +10,4 @@ BITSHARES_ELASTIC_SEARCH_NODE = {
 }
 
 DATABASE = 'postgres://postgres:secret@localhost:5432/postgres'
-DEBUG = True
+DEBUG = False
