@@ -15,7 +15,7 @@ def get_asset(asset_id):
     if asset_id not in assets_by_id:
         print('Load asset {}'.format(asset_id))
         asset = bts.get_object(asset_id)
-        assets_by_id[asset_id] = { 'name': asset['symbol'], 'precision': asset['precision'] }
+        assets_by_id[asset_id] = { 'name': asset['symbol'], 'precision': 10 ** asset['precision'] }
     return assets_by_id[asset_id]
 
 def get_account_name(account_id):
