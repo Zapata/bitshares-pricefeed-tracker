@@ -133,4 +133,5 @@ for css in external_css:
     app.css.append_css({"external_url": css})
 
 if __name__ == '__main__':
+    import config
     app.run_server(debug=config.DEBUG)
