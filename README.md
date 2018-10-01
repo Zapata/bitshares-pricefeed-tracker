@@ -8,7 +8,7 @@ Install virtual environment and setup:
 
 Install dependencies:
 
-    pip install -r requirements.pip
+    pip install -r requirements.txt
 
 To run you will need:
 
