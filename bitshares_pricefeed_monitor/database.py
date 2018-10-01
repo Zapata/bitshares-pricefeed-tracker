@@ -23,7 +23,7 @@ prices = Table('prices', metadata,
 )
 
 metadata.create_all(db)
-db.execute(text("select create_hypertable('prices', 'timestamp', if_not_exists => true)"))
+db.execute(text("select create_hypertable('prices', 'timestamp', if_not_exists => true, migrate_data => true)"))
 
 
 def max_timestamp():
