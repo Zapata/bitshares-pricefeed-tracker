@@ -14,4 +14,4 @@ BITSHARES_ELASTIC_SEARCH_NODE = {
 }
 
 DATABASE = os.environ.get('DATABASE', 'postgres://postgres:secret@localhost:5432/postgres')
-DEBUG = bool(os.environ.get('DEBUG', 'False'))
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
