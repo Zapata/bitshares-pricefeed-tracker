@@ -84,7 +84,10 @@ def set_publisher_options(selected_asset):
 
 
 def graph_layout(data, error_msg=None):
-    divs = [ dcc.Graph(id='price-graph', figure=go.Figure(data=data)) ]
+    divs = [ dcc.Graph(
+                id='price-graph', 
+                figure=go.Figure(data=data, layout=go.Layout(hovermode='closest'))
+            ) ]
     if error_msg:
         divs.append(html.Div(style={'text-align': 'center', 'color': 'Tomato'}, children=error_msg))
     return divs
