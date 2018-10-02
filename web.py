@@ -2,18 +2,17 @@ import dash
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import dash_html_components as html
-from datetime import datetime as dt
+from datetime import datetime, timedelta
 import plotly.graph_objs as go
 
 import bitshares_pricefeed_monitor.database as db
-from sqlalchemy.sql import select, and_
-
 
 app = dash.Dash()
 
 def build_layout():
     min_date = db.min_timestamp().isoformat()
     max_date = db.max_timestamp().isoformat()
+    safe_start_date = (datetime.now() - timedelta(days=1)).replace(microsecond=0).isoformat()
     return html.Div([
         html.H1(children='BitShares Feed Tracker', style={'text-align': 'center'}),
         html.Div(className='pure-g', children=[
@@ -38,7 +37,7 @@ def build_layout():
                             values=[]
                         ),
                         html.Label(children='From:'),
-                        dcc.Input(id='from-date', type='datetime-local', min=min_date, max=max_date, value=min_date),
+                        dcc.Input(id='from-date', type='datetime-local', min=min_date, max=max_date, value=safe_start_date),
                         html.Label(children='To:'),
                         dcc.Input(id='to-date', type='datetime-local', min=min_date, max=max_date, value=None),
                         html.Label(children='Additional feeds:'),
