@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import dash_html_components as html
 from datetime import datetime, timedelta
+import dateutil.parser
 import plotly.graph_objs as go
 
 import bitshares_pricefeed_monitor.database as db
@@ -44,9 +45,9 @@ def build_layout():
                         dcc.Checklist(
                             id='options',
                             options=[
-                                {'label': 'Feed median', 'value': 'median'},
-                                {'label': 'DEX price', 'value': 'internal'},
-                                {'label': 'External price', 'value': 'external'}
+                                { 'label': 'Feed median', 'value': 'median', 'disabled': False },
+                                { 'label': 'DEX price', 'value': 'internal', 'disabled': True },
+                                { 'label': 'External price', 'value': 'external', 'disabled': True }
                             ],
                             labelClassName='pure-checkbox',
                             values=[]
@@ -54,7 +55,7 @@ def build_layout():
                     ])
                 ])
             ]),
-            html.Div(className='pure-u-4-5', children=[
+            html.Div(id="graph-container", className='pure-u-4-5', children=[
                 dcc.Graph(id='price-graph')
             ])
         ])
@@ -82,8 +83,14 @@ def set_publisher_options(selected_asset):
     return [{'label': p, 'value': p} for p in publishers]
 
 
+def graph_layout(data, error_msg=None):
+    divs = [ dcc.Graph(id='price-graph', figure=go.Figure(data=data)) ]
+    if error_msg:
+        divs.append(html.Div(style={'text-align': 'center', 'color': 'Tomato'}, children=error_msg))
+    return divs
+
 @app.callback(
-    Output('price-graph', 'figure'), 
+    Output('graph-container', 'children'), 
     [ 
         Input('asset-dropdown', 'value'),
         Input('publisher-dropdown', 'value'),
@@ -93,7 +100,16 @@ def set_publisher_options(selected_asset):
     ])
 def update_graph(selected_asset, selected_publishers, start_date, end_date, options):
     if not (selected_asset and selected_publishers):
-        return {}
+        return graph_layout([])
+
+    if start_date and end_date:
+        date_range = dateutil.parser.parse(end_date) - dateutil.parser.parse(start_date)
+    else:
+        date_range = datetime.utcnow() - dateutil.parser.parse(start_date)
+
+    if date_range.days < 0 or date_range.days > config.MAX_DATE_RANGE_IN_DAYS:
+        error_msg = 'Date range %s to %s is %s days which is more than %s days allowed!' % (start_date, end_date, date_range.days, config.MAX_DATE_RANGE_IN_DAYS)
+        return graph_layout([], error_msg=error_msg)
 
     df = db.get_prices(searched_asset=selected_asset, searched_publishers=selected_publishers, start_date=start_date, end_date=end_date)
 
@@ -121,7 +137,7 @@ def update_graph(selected_asset, selected_publishers, start_date, end_date, opti
             )
         ))
     
-    return { 'data': data }
+    return graph_layout(data)
 
 external_css = [
     "https://unpkg.com/purecss@1.0.0/build/base-min.css",

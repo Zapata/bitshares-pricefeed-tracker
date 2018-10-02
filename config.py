@@ -3,6 +3,7 @@ import os
 
 # Since how far in time should we load the pricefeed in the database?
 OLDEST_PRICEFEED_DATETIME = parser.parse(os.environ.get('OLDEST_PRICEFEED_DATETIME', '2018-09-14'))
+MAX_DATE_RANGE_IN_DAYS = int(os.environ.get('MAX_DATE_RANGE_IN_DAYS', '3'))
 
 BITSHARES_WEBSOCKET_NODE = os.environ.get('WEBSOCKET_URL', 'ws://localhost:8090/ws')
 BITSHARES_ELASTIC_SEARCH_NODE = {
