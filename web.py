@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import dateutil.parser
 import plotly.graph_objs as go
 
-import bitshares_pricefeed_monitor.database as db
+import bitshares_pricefeed_tracker.database as db
 
 app = dash.Dash()
 

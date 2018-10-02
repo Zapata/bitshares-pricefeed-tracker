@@ -1,4 +1,4 @@
-# Bitshares Pricefeed Monitor
+# Bitshares Pricefeed Tracker
 
 Install virtual environment and setup:
 

@@ -1,7 +1,7 @@
 import schedule
 import time
 import threading
-from bitshares_pricefeed_monitor.loader import load_recent_pricefeeds, load_historic_pricefeeds
+from bitshares_pricefeed_tracker.loader import load_recent_pricefeeds, load_historic_pricefeeds
 import functools
 
 def safely_load_historic_pricefeeds():
