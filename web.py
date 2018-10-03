@@ -9,6 +9,7 @@ import plotly.graph_objs as go
 import bitshares_pricefeed_tracker.database as db
 
 app = dash.Dash()
+server = app.server # the Flask app
 
 def build_layout():
     min_date = db.min_timestamp().isoformat()
