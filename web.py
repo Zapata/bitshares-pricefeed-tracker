@@ -7,6 +7,7 @@ import dateutil.parser
 import plotly.graph_objs as go
 
 import bitshares_pricefeed_tracker.database as db
+import config
 
 app = dash.Dash()
 server = app.server # the Flask app
@@ -152,5 +153,4 @@ for css in external_css:
     app.css.append_css({"external_url": css})
 
 if __name__ == '__main__':
-    import config
     app.run_server(debug=config.DEBUG)
