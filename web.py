@@ -51,7 +51,7 @@ def build_layout():
                             options=[
                                 { 'label': 'Feed median', 'value': 'median', 'disabled': False },
                                 { 'label': 'DEX price', 'value': 'dex_price', 'disabled': False },
-                                { 'label': 'External price', 'value': 'cex_price', 'disabled': True }
+                                { 'label': 'External price', 'value': 'cex_price', 'disabled': False }
                             ],
                             labelClassName='pure-checkbox',
                             values=[]
@@ -149,7 +149,19 @@ def update_graph(selected_asset, selected_publishers, start_date, end_date, opti
         data.append(go.Scatter(
             x= dex_prices.timestamp,
             y= dex_prices.close,
-            name= 'bit{}/BTS'.format(selected_asset),
+            name= 'DEX (bit{}/BTS)'.format(selected_asset),
+            mode= 'lines+markers',
+            line=dict(
+                shape='spline'
+            )
+        ))
+
+    if 'cex_price' in options:
+        source, cex_prices = util.get_cex_prices(selected_asset, start_date)
+        data.append(go.Scatter(
+            x= cex_prices.timestamp,
+            y= cex_prices.close,
+            name= 'CEX ({})'.format(source),
             mode= 'lines+markers',
             line=dict(
                 shape='spline'
