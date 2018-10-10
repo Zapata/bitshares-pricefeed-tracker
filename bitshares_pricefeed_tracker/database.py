@@ -43,6 +43,7 @@ def list_publishers(asset):
     return [ c for (c, ) in rows ]
 
 def get_prices(searched_asset=None, searched_publishers=None, start_date=None, end_date=None, searched_source='blockchain', searched_tag='mainnet'):
+    print('get_prices({}, {}, {}, {})'.format(searched_asset, searched_publishers, start_date, end_date))
     query = select([prices.c.publisher, prices.c.timestamp, prices.c.price])
     query = query.order_by(prices.c.publisher, prices.c.timestamp)
     if searched_asset:
@@ -61,6 +62,7 @@ def get_prices(searched_asset=None, searched_publishers=None, start_date=None, e
     return pd.read_sql(query, db)
 
 def get_medians(searched_asset=None, start_date=None, end_date=None, searched_source='blockchain', searched_tag='mainnet'):
+    print('get_median({}, {}, {})'.format(searched_asset, start_date, end_date))
     df = get_prices(searched_asset=searched_asset, start_date=start_date, end_date=end_date, searched_source=searched_source, searched_tag=searched_tag)
     all_dates = df['timestamp'].drop_duplicates()
     medians = pd.DataFrame()

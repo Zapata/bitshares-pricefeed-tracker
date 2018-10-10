@@ -18,6 +18,9 @@ def get_asset(asset_id):
         assets_by_id[asset_id] = { 'name': asset['symbol'], 'precision': 10 ** asset['precision'] }
     return assets_by_id[asset_id]
 
+def get_asset_id(asset_name):
+    return bts.request('database', 'lookup_asset_symbols', [[asset_name]])[0]['id']
+
 def get_account_name(account_id):
     if account_id not in account_names_by_id:
         print('Load account {}'.format(account_id))
@@ -25,10 +28,14 @@ def get_account_name(account_id):
         account_names_by_id[account_id] = account['name']
     return account_names_by_id[account_id]
 
+def compute_price_inner(base_amount, base_precision, quote_amount, quote_precision, invert=False):
+    price = (float(base_amount) / base_precision) / (float(quote_amount) / quote_precision) 
+    return 1 / price if invert else price
+
 def compute_price(price_data):
     quote_precision = get_asset(price_data['quote']['asset_id'])['precision']
     base_precision = get_asset(price_data['base']['asset_id'])['precision']
-    return (float(price_data['base']['amount']) / base_precision) / (float(price_data['quote']['amount']) / quote_precision)
+    return compute_price_inner(price_data['base']['amount'], base_precision, price_data['quote']['amount'], quote_precision)
 
 def load_pricefeeds(from_date, to_date, batch_size=1000):
     count = 0
@@ -84,3 +91,22 @@ def load_historic_pricefeeds():
         count = load_pricefeeds(start.isoformat(), last.isoformat())
         print("Loaded {} old feeds from {} to {}.".format(count, start.isoformat(), last.isoformat()))
         last = start - timedelta(seconds=1)
+
+def get_market_history(asset, start, end):
+    asset_id = get_asset_id(asset)
+    # FIXME: Bucket size should be dynamically computed.
+    # Currently bucket size is set to 900 as get_market_history returns only 200 elements.
+    print('get_market_history({}, {}, {}, {}, {})'.format(asset_id, '1.3.0', 900, start, end))
+    market_history = bts.request('history', 'get_market_history', [ asset_id, '1.3.0', 900, start, end ])
+    base_precision = get_asset(market_history[0]['key']['base'])['precision']
+    quote_precision = get_asset(market_history[0]['key']['quote'])['precision']
+    invert = bool(market_history[0]['key']['base'] == '1.3.0')
+
+    prices = [ {
+        'timestamp': d['key']['open'],
+        'open': compute_price_inner(d['open_base'], base_precision, d['open_quote'], quote_precision, invert=invert),
+        'close': compute_price_inner(d['close_base'], base_precision, d['close_quote'], quote_precision, invert=invert),
+        'low': compute_price_inner(d['low_base'], base_precision, d['low_quote'], quote_precision, invert=invert),
+        'high': compute_price_inner(d['high_base'], base_precision, d['high_quote'], quote_precision, invert=invert),
+    } for d in market_history ]
+    return prices

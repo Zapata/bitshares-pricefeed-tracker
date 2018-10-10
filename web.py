@@ -7,9 +7,11 @@ import dateutil.parser
 import plotly.graph_objs as go
 
 import bitshares_pricefeed_tracker.database as db
+import bitshares_pricefeed_tracker.util as util
 import config
 
 app = dash.Dash()
+app.title = "BitShares Feed Tracker"
 server = app.server # the Flask app
 
 def build_layout():
@@ -48,8 +50,8 @@ def build_layout():
                             id='options',
                             options=[
                                 { 'label': 'Feed median', 'value': 'median', 'disabled': False },
-                                { 'label': 'DEX price', 'value': 'internal', 'disabled': True },
-                                { 'label': 'External price', 'value': 'external', 'disabled': True }
+                                { 'label': 'DEX price', 'value': 'dex_price', 'disabled': False },
+                                { 'label': 'External price', 'value': 'cex_price', 'disabled': True }
                             ],
                             labelClassName='pure-checkbox',
                             values=[]
@@ -139,6 +141,18 @@ def update_graph(selected_asset, selected_publishers, start_date, end_date, opti
             mode= 'lines+markers',
             line=dict(
                 shape='hv'
+            )
+        ))
+
+    if 'dex_price' in options:
+        dex_prices = util.get_dex_prices(selected_asset, start_date, end_date)
+        data.append(go.Scatter(
+            x= dex_prices.timestamp,
+            y= dex_prices.close,
+            name= 'bit{}/BTS'.format(selected_asset),
+            mode= 'lines+markers',
+            line=dict(
+                shape='spline'
             )
         ))
     
