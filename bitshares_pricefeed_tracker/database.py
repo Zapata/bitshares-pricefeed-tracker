@@ -68,8 +68,8 @@ def get_medians(searched_asset=None, start_date=None, end_date=None, searched_so
     medians = pd.DataFrame()
     for name, group in df.groupby('publisher'):
         group = group.drop('publisher', axis=1)
+        group = group.drop_duplicates(subset='timestamp')
         group = group.set_index('timestamp')
-        group = group.drop_duplicates()
         group = group.reindex(all_dates, method='ffill')
         medians = medians.append(group)
     medians = medians.groupby('timestamp').median()
