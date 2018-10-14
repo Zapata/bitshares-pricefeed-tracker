@@ -98,6 +98,8 @@ def get_market_history(asset, start, end):
     # Currently bucket size is set to 900 as get_market_history returns only 200 elements.
     print('get_market_history({}, {}, {}, {}, {})'.format(asset_id, '1.3.0', 900, start, end))
     market_history = bts.request('history', 'get_market_history', [ asset_id, '1.3.0', 900, start, end ])
+    if not market_history:
+        return []
     base_precision = get_asset(market_history[0]['key']['base'])['precision']
     quote_precision = get_asset(market_history[0]['key']['quote'])['precision']
     invert = bool(market_history[0]['key']['base'] == '1.3.0')

@@ -8,7 +8,7 @@ def get_dex_prices(asset, start_date, end_date):
     if not end_date:
         end_date = datetime.utcnow().replace(microsecond=0).isoformat()
     h = get_market_history(asset, start_date, end_date)
-    df = pd.DataFrame(h)
+    df = pd.DataFrame(data=h, columns=['timestamp', 'open', 'close', 'low', 'high'])
     return df
 
 _request_headers = {'content-type': 'application/json',
