@@ -47,12 +47,8 @@ def build_layout():
                         dcc.Input(id='to-date', type='datetime-local', min=min_date, max=max_date, value=None),
                         html.Label(children='Additional feeds:'),
                         dcc.Checklist(
-                            id='options',
-                            options=[
-                                { 'label': 'Feed median', 'value': 'median', 'disabled': False },
-                                { 'label': 'DEX price', 'value': 'dex_price', 'disabled': False },
-                                { 'label': 'External price', 'value': 'cex_price', 'disabled': False }
-                            ],
+                            id='feeds-options',
+                            # options = see configure_feeds_options()
                             labelClassName='pure-checkbox',
                             values=[]
                         ),
@@ -86,6 +82,16 @@ def set_publisher_options(selected_asset):
     publishers = db.list_publishers(selected_asset)
     return [{'label': p, 'value': p} for p in publishers]
 
+@app.callback(Output('feeds-options', 'options'), [Input('asset-dropdown', 'value')])
+def configure_feeds_options(selected_asset):
+    has_cex_prices = util.has_cex_prices(selected_asset)
+    cex_prices_source = util.cex_price_source(selected_asset) if has_cex_prices else 'N/A'
+
+    return [
+        { 'label': 'Feed median', 'value': 'median', 'disabled': False },
+        { 'label': 'DEX price', 'value': 'dex_price', 'disabled': False },
+        { 'label': 'External price ({})'.format(cex_prices_source), 'value': 'cex_price', 'disabled': not has_cex_prices }
+    ]
 
 def graph_layout(data, error_msg=None):
     divs = [ dcc.Graph(
@@ -110,7 +116,7 @@ def graph_layout(data, error_msg=None):
         Input('publisher-dropdown', 'value'),
         Input('from-date', 'value'),
         Input('to-date', 'value'),
-        Input('options', 'values'),
+        Input('feeds-options', 'values'),
     ])
 def update_graph(selected_asset, selected_publishers, start_date, end_date, options):
     if not (selected_asset and selected_publishers):
@@ -163,8 +169,9 @@ def update_graph(selected_asset, selected_publishers, start_date, end_date, opti
             )
         ))
 
-    if 'cex_price' in options:
-        source, cex_prices = util.get_cex_prices(selected_asset, start_date)
+    if 'cex_price' in options and util.has_cex_prices(selected_asset):
+        cex_prices = util.get_cex_prices(selected_asset, start_date)
+        source = util.cex_price_source(selected_asset)
         data.append(go.Scatter(
             x= cex_prices.timestamp,
             y= cex_prices.close,

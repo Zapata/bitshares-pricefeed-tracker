@@ -19,9 +19,14 @@ _cex_pairs = {
     'CNY': 'bts_qc'
 }
 
+def has_cex_prices(asset):
+    return bool(asset in _cex_pairs)
+
+def cex_price_source(asset):
+    return 'ZB {}'.format(_cex_pairs[asset]).upper().replace('_', '/')
+
 def get_cex_prices(asset, start_date):
     start_timestamp = int(dateutil.parser.parse('{} UTC'.format(start_date)).timestamp() * 1e3)
-    source = 'ZB {}'.format(_cex_pairs[asset]).upper().replace('_', '/')
     response = requests.get(
         url='http://api.zb.cn/data/v1/kline?market={}&type=15min&since={}'.format(_cex_pairs[asset], start_timestamp),
         headers=_request_headers,
@@ -30,4 +35,4 @@ def get_cex_prices(asset, start_date):
         return None
     df = pd.DataFrame(response['data'], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
     df.timestamp = df.timestamp.map(lambda d : datetime.utcfromtimestamp(d / 1e3).isoformat())
-    return (source, df)
+    return df
