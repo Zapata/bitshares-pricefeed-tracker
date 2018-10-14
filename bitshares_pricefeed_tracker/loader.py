@@ -92,12 +92,17 @@ def load_historic_pricefeeds():
         print("Loaded {} old feeds from {} to {}.".format(count, start.isoformat(), last.isoformat()))
         last = start - timedelta(seconds=1)
 
+def _compute_bucket(start_date, end_date):
+    max_returned_elements = 200
+    buckets = bts.request('history', 'get_market_history_buckets', [])
+    date_range = parser.parse(end_date) - parser.parse(start_date)
+    return next( (bucket for bucket in buckets if date_range.total_seconds() / bucket < max_returned_elements), buckets[-1])
+
 def get_market_history(asset, start, end):
     asset_id = get_asset_id(asset)
-    # FIXME: Bucket size should be dynamically computed.
-    # Currently bucket size is set to 900 as get_market_history returns only 200 elements.
-    print('get_market_history({}, {}, {}, {}, {})'.format(asset_id, '1.3.0', 900, start, end))
-    market_history = bts.request('history', 'get_market_history', [ asset_id, '1.3.0', 900, start, end ])
+    bucket = _compute_bucket(start, end)
+    print('get_market_history({}, {}, {}, {}, {})'.format(asset_id, '1.3.0', bucket, start, end))
+    market_history = bts.request('history', 'get_market_history', [ asset_id, '1.3.0', bucket, start, end ])
     if not market_history:
         return []
     base_precision = get_asset(market_history[0]['key']['base'])['precision']
