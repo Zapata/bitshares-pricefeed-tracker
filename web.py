@@ -10,7 +10,7 @@ import bitshares_pricefeed_tracker.database as db
 import bitshares_pricefeed_tracker.util as util
 import config
 
-app = dash.Dash()
+app = dash.Dash(__name__)
 app.title = "BitShares Feed Tracker"
 server = app.server # the Flask app
 
@@ -19,8 +19,10 @@ def build_layout():
     max_date = db.max_timestamp().isoformat()
     safe_start_date = (datetime.now() - timedelta(days=1)).replace(microsecond=0).isoformat()
     return html.Div([
-        html.H1(children='BitShares Feed Tracker', style={'text-align': 'center'}),
-        html.Div(className='pure-g', children=[
+        html.Div(className='header', children=[
+            html.H1(children='BitShares Feed Tracker', style={'text-align': 'center'})
+        ]),
+        html.Div(className='container pure-g', children=[
             html.Div(className='pure-u-1-5', children=[
                 html.Form(className="pure-form-stacked", children=[
                     html.Fieldset(children=[
@@ -58,7 +60,17 @@ def build_layout():
             html.Div(id="graph-container", className='pure-u-4-5', children=[
                 dcc.Graph(id='price-graph')
             ])
-        ])
+        ]),
+        html.Div([
+            'Made by ',
+            html.A(href='https://bitsharestalk.org/index.php?topic=26881.0', title='Please vote to support!', children=[
+                html.Code('zapata42-witness'),
+            ]),
+            ' ',
+            html.A(href='https://github.com/Zapata/bitshares-pricefeed-tracker', title='Edit on Github!', children=[
+                html.Img(height=16, width=16, src="https://unpkg.com/simple-icons@latest/icons/github.svg")
+            ])
+        ], className='footer')
     ])
 
 app.layout = build_layout()

@@ -1,0 +1,31 @@
+.header {
+    background-color: #fafbfc!important;
+    width: 100%;
+    text-align: center;
+    padding: 1em;
+    line-height: 1.7em;
+    color: #1f8dd6;
+}
+
+.footer {
+    background-color: #fafbfc!important;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 1em;
+    line-height: 1.7em;
+    color: #1f8dd6;
+}
+
+._dash-undo-redo {
+    bottom: 70px !important;
+}
+
+.container {
+    padding: 32px;
+}
+
+a, a:visited, a:hover, a:active {
+    color: inherit;
+}
