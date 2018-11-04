@@ -73,7 +73,7 @@ def build_layout():
         ], className='footer')
     ])
 
-app.layout = build_layout()
+app.layout = build_layout
 
 
 @app.callback(
