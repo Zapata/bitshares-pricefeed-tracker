@@ -50,7 +50,7 @@ def load_pricefeeds(from_date, to_date, batch_size=1000):
     batch = []
     for hit in s.scan():
         count += 1
-        op = json.loads(hit.operation_history.op)[1]
+        op = hit.operation_history.op_object
         batch.append({
             'timestamp': parser.parse(hit.block_data.block_time),
             'source': 'blockchain', # api, external
