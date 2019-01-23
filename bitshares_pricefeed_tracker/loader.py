@@ -68,7 +68,8 @@ def load_pricefeeds(from_date, to_date, batch_size=1000):
             db.execute(prices.insert(), batch)
             batch = []
 
-    db.execute(prices.insert(), batch)
+    if (len(batch) > 0):
+        db.execute(prices.insert(), batch)
     return count
 
 def load_recent_pricefeeds():
