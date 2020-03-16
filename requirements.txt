@@ -1,8 +1,8 @@
 SQLAlchemy
 psycopg2
 certifi
-elasticsearch>=6.0.0,<7.0.0
-elasticsearch-dsl>=6.0.0,<7.0.0
+elasticsearch>=7.1.0
+elasticsearch-dsl>=7.1.0
 websocket-client
 schedule
 dash==0.27.0  # The core dash backend
