@@ -11,7 +11,8 @@ BITSHARES_ELASTIC_SEARCH_NODE = {
     'http_auth': (
         os.environ.get('ELASTICSEARCH_USER', 'BitShares'), 
         os.environ.get('ELASTICSEARCH_PASSWORD', '******')
-    )
+    ),
+    'timeout': int(os.environ.get('ELASTICSEARCH_TIMEOUT', '10'))
 }
 
 DATABASE = os.environ.get('DATABASE', 'postgres://postgres:secret@localhost:5432/postgres')
