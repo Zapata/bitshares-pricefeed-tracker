@@ -5,7 +5,7 @@ elasticsearch>=7.1.0
 elasticsearch-dsl>=7.1.0
 websocket-client
 schedule
-dash==0.27.0  # The core dash backend
+dash==2.15.0  # The core dash backend
 dash-html-components==0.13.2  # HTML components
 dash-core-components==0.30.2  # Supercharged components
 requests>=2.3.0
