@@ -7,7 +7,7 @@ websocket-client
 schedule
 dash==0.27.0  # The core dash backend
 dash-html-components==0.13.2  # HTML components
-dash-core-components==0.30.2  # Supercharged components
+dash-core-components==2.0.0  # Supercharged components
 requests>=2.3.0
 pandas>=0.19.2
 pandas-datareader
